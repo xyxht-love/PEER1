@@ -1,5 +1,4 @@
-# 纯净版 PeerNGA.py（完全移除 request_interceptor 和 __interceptor）
-clean_content = '''import os
+import os
 import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -23,13 +22,20 @@ def _checkStates(level: int):
 
 
 class PeerNGA:
-    def __init__(self, driverPath: str) -> NoReturn:
+    # 修改点1：将 driverPath 设为可选参数，默认值为 None
+    def __init__(self, driverPath: str = None) -> NoReturn:
         options = webdriver.ChromeOptions()
         options.add_argument('--incognito')
         prefs = {'download.default_directory': os.path.abspath('./downloads')}
         options.add_experimental_option('prefs', prefs)
 
-        self.browser = webdriver.Chrome(service=Service(driverPath), options=options)
+        # 修改点2：智能处理驱动路径
+        if driverPath:
+            # 如果传入了路径，使用指定的驱动
+            self.browser = webdriver.Chrome(service=Service(driverPath), options=options)
+        else:
+            # 如果未传入路径，让 Selenium Manager 自动下载和管理驱动
+            self.browser = webdriver.Chrome(options=options)
         
         self.states = {
             "sign in": False,
@@ -148,9 +154,3 @@ class PeerNGA:
             return nameDict[label]
         print('There is no such setting item: {0}'.format(label))
         return False
-'''
-
-# 写入文件
-with open('PeerNGA.py', 'w', encoding='utf-8') as f:
-    f.write(clean_content)
-print("✅ 已强制覆盖 PeerNGA.py 为纯净版本")
