@@ -1,5 +1,6 @@
 import os
 from seleniumwire import webdriver
+from selenium.webdriver.chrome.service import Service  # 新增：导入 Service
 from seleniumwire.request import Request
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -28,7 +29,8 @@ class PeerNGA:
         options = webdriver.ChromeOptions()
         options.add_argument('--incognito')
 
-        self.browser = webdriver.Chrome(driverPath, chrome_options=options)
+        # 修改：使用 service 参数传入 Service(driverPath)
+        self.browser = webdriver.Chrome(service=Service(driverPath), options=options)
         self.browser.request_interceptor = self.__interceptor
 
         self.states = {
